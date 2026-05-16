@@ -769,8 +769,12 @@ Los backups .tar, .tar.gz, .tgz y variantes quedan ignorados por Git.
 Tambien se ignoran archivos comunes de secretos como .env, llaves y archivos con password/secret en el nombre.
 ```
 
-Pendiente:
+Validacion realizada:
 
 ```text
-Confirmar push exitoso a git@github.com:Charly-Rojas/vps.git.
+Repositorio inicializado en Git.
+Rama principal renombrada a main.
+Remote configurado como git@github.com:Charly-Rojas/vps.git.
+Push exitoso a origin/main.
+Backups .tar.gz verificados como ignorados por .gitignore.
 ```
