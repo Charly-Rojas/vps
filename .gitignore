@@ -1,0 +1,13 @@
+*.tar
+*.tar.gz
+*.tgz
+*.tar.bz2
+*.tar.xz
+
+.env
+*.pem
+*.key
+*password*
+*passwd*
+*secret*
+

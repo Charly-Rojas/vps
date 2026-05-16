@@ -1,0 +1,61 @@
+;;
+;; Domain:     creativobusiness.com.
+;; Exported:   2026-05-15 18:16:46
+;;
+;; This file is intended for use for informational and archival
+;; purposes ONLY and MUST be edited before use on a production
+;; DNS server.  In particular, you must:
+;;   -- update the SOA record with the correct authoritative name server
+;;   -- update the SOA record with the contact e-mail address information
+;;   -- update the NS record(s) with the authoritative name servers for this domain.
+;;
+;; For further information, please consult the BIND documentation
+;; located on the following website:
+;;
+;; http://www.isc.org/
+;;
+;; And RFC 1035:
+;;
+;; http://www.ietf.org/rfc/rfc1035.txt
+;;
+;; Please note that we do NOT offer technical support for any use
+;; of this zone data, the BIND name server, or any other third-party
+;; DNS software.
+;;
+;; Use at your own risk.
+;; SOA Record
+creativobusiness.com	3600	IN	SOA	alan.ns.cloudflare.com. dns.cloudflare.com. 2053053560 10000 2400 604800 3600
+
+;; NS Records
+creativobusiness.com.	86400	IN	NS	alan.ns.cloudflare.com.
+creativobusiness.com.	86400	IN	NS	margot.ns.cloudflare.com.
+
+;; A Records
+creativobusiness.com.	1	IN	A	193.46.199.28 ; cf_tags=cf-proxied:true
+localhost.creativobusiness.com.	1	IN	A	127.0.0.1 ; cf_tags=cf-proxied:false
+mail.creativobusiness.com.	1	IN	A	193.46.199.28 ; cf_tags=cf-proxied:false
+
+;; CNAME Records
+www.creativobusiness.com.	1	IN	CNAME	creativobusiness.com. ; cf_tags=cf-proxied:true
+
+;; MX Records
+creativobusiness.com.	1	IN	MX	0 mail.creativobusiness.com.
+
+;; SRV Records
+_autodiscover._tcp.creativobusiness.com.	1	IN	SRV	0 0 443 cpanelemaildiscovery.cpanel.net.
+_caldavs._tcp.creativobusiness.com.	1	IN	SRV	0 0 2080 mco22.prodns.mx.
+_caldav._tcp.creativobusiness.com.	1	IN	SRV	0 0 2079 mco22.prodns.mx.
+_carddavs._tcp.creativobusiness.com.	1	IN	SRV	0 0 2080 mco22.prodns.mx.
+_carddav._tcp.creativobusiness.com.	1	IN	SRV	0 0 2079 mco22.prodns.mx.
+
+;; TXT Records
+202604._domainkey.creativobusiness.com.	1	IN	TXT	"v=DKIM1; k=rsa; t=s; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2FmAvfI9x03DZZsyYF0Yo3a0lKaw7xU7qmeq9EmaNjpCyN4nTjeY2iKdPgreDEzfrqTt14YKD317Hn+z7suVZca2CasEfCBCt/niIo4TMWi+wEjbnczQBga6+LP7FpfWOnfVx/6fKmw6zq9tt+zze5HXIremLo++RFCtiTIm3m4zMvr4rIHWX/covWrP" "wfj8LsZuAtHKm5ZmVCEvFFegLPuOXdEEgp49hW2S1XcLAEB2SA8OMk3RQ0obzlnmDdSUMAALcmkaCQet0fNi+xhQ13DUrSjbZ/r6i99HgYn2eP58e9aRIKObec/ExoAs+geUK2qgRbOPzdNCFi09RIWfvwIDAQAB"
+_acme-challenge.creativobusiness.com.	1	IN	TXT	"EOl4KwpEWcCvYkFwh0uk9cGSGbg-3tVzHbmEepsCAx0"
+_caldavs._tcp.creativobusiness.com.	1	IN	TXT	"path=/"
+_caldav._tcp.creativobusiness.com.	1	IN	TXT	"path=/"
+_carddavs._tcp.creativobusiness.com.	1	IN	TXT	"path=/"
+_carddav._tcp.creativobusiness.com.	1	IN	TXT	"path=/"
+_cpanel-dcv-test-record.creativobusiness.com.	1	IN	TXT	"_cpanel-dcv-test-record=oRfxuUX6mvowMNX_BPI4JZJGo11xm94P3L7EGxTNnZ2otKwYpDhGUdZcfMydcw8G"
+creativobusiness.com.	1	IN	TXT	"v=spf1 a mx ip4:193.46.199.28 ~all"
+default._domainkey.creativobusiness.com.	1	IN	TXT	"v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4M6Mi/Xsugb5EUgxM3OU4AE+eeRrQdQxn+nnqLWrpezCRtSzRKymcx0+gIQuqgpodlucVGsnI/bNSnRc4NpjUyENEEE22pD7pKVA7whkps/SIltzNWiZ0CpthPcCS2daIysmQmTETdy31ubmb3D3NgrTk/aPgDdEJr2Z3Fmtei5hg3fdo7pca4BCtzS55I24D" "HSCU7aHa+XqbboS533WuFsOGCi99uAdUNC5chErEaXC51Szjicw68VtggnHFiFj4H5LiUsPWG90pwi2Zs51wJrNXoXdtIUUo3lHk6QtzMIRX7yk0unPXvzYESBnTPiKBAdlVb0KVcQ92fe0UE0zCwIDAQAB;"
+_dmarc.creativobusiness.com.	1	IN	TXT	"v=DMARC1; p=none; rua=mailto:contacto@devus.mx"

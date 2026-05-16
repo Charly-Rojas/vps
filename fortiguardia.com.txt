@@ -1,0 +1,61 @@
+;;
+;; Domain:     fortiguardia.com.
+;; Exported:   2026-05-15 18:17:21
+;;
+;; This file is intended for use for informational and archival
+;; purposes ONLY and MUST be edited before use on a production
+;; DNS server.  In particular, you must:
+;;   -- update the SOA record with the correct authoritative name server
+;;   -- update the SOA record with the contact e-mail address information
+;;   -- update the NS record(s) with the authoritative name servers for this domain.
+;;
+;; For further information, please consult the BIND documentation
+;; located on the following website:
+;;
+;; http://www.isc.org/
+;;
+;; And RFC 1035:
+;;
+;; http://www.ietf.org/rfc/rfc1035.txt
+;;
+;; Please note that we do NOT offer technical support for any use
+;; of this zone data, the BIND name server, or any other third-party
+;; DNS software.
+;;
+;; Use at your own risk.
+;; SOA Record
+fortiguardia.com	3600	IN	SOA	alan.ns.cloudflare.com. dns.cloudflare.com. 2053053564 10000 2400 604800 3600
+
+;; NS Records
+fortiguardia.com.	86400	IN	NS	alan.ns.cloudflare.com.
+fortiguardia.com.	86400	IN	NS	margot.ns.cloudflare.com.
+
+;; A Records
+fortiguardia.com.	1	IN	A	193.46.199.28 ; cf_tags=cf-proxied:true
+localhost.fortiguardia.com.	1	IN	A	127.0.0.1 ; cf_tags=cf-proxied:false
+mail.fortiguardia.com.	1	IN	A	193.46.199.28 ; cf_tags=cf-proxied:true
+
+;; CNAME Records
+www.fortiguardia.com.	1	IN	CNAME	fortiguardia.com. ; cf_tags=cf-proxied:false
+
+;; MX Records
+fortiguardia.com.	1	IN	MX	0 mail.fortiguardia.com.
+
+;; SRV Records
+_autodiscover._tcp.fortiguardia.com.	1	IN	SRV	0 0 443 cpanelemaildiscovery.cpanel.net.
+_caldavs._tcp.fortiguardia.com.	1	IN	SRV	0 0 2080 mco22.prodns.mx.
+_caldav._tcp.fortiguardia.com.	1	IN	SRV	0 0 2079 mco22.prodns.mx.
+_carddavs._tcp.fortiguardia.com.	1	IN	SRV	0 0 2080 mco22.prodns.mx.
+_carddav._tcp.fortiguardia.com.	1	IN	SRV	0 0 2079 mco22.prodns.mx.
+
+;; TXT Records
+202604._domainkey.fortiguardia.com.	1	IN	TXT	"v=DKIM1; k=rsa; t=s; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2FmAvfI9x03DZZsyYF0Yo3a0lKaw7xU7qmeq9EmaNjpCyN4nTjeY2iKdPgreDEzfrqTt14YKD317Hn+z7suVZca2CasEfCBCt/niIo4TMWi+wEjbnczQBga6+LP7FpfWOnfVx/6fKmw6zq9tt+zze5HXIremLo++RFCtiTIm3m4zMvr4rIHWX/covWrP" "wfj8LsZuAtHKm5ZmVCEvFFegLPuOXdEEgp49hW2S1XcLAEB2SA8OMk3RQ0obzlnmDdSUMAALcmkaCQet0fNi+xhQ13DUrSjbZ/r6i99HgYn2eP58e9aRIKObec/ExoAs+geUK2qgRbOPzdNCFi09RIWfvwIDAQAB"
+_acme-challenge.fortiguardia.com.	1	IN	TXT	"E8jQ-uoDXECWXbrtTEX7WvKT_E4_gSYnyW9DB8ekSxg"
+_caldavs._tcp.fortiguardia.com.	1	IN	TXT	"path=/"
+_caldav._tcp.fortiguardia.com.	1	IN	TXT	"path=/"
+_carddavs._tcp.fortiguardia.com.	1	IN	TXT	"path=/"
+_carddav._tcp.fortiguardia.com.	1	IN	TXT	"path=/"
+_cpanel-dcv-test-record.fortiguardia.com.	1	IN	TXT	"_cpanel-dcv-test-record=jHOliCUYzxhtWytnwNFl3VhjvPqSXim16o3xj3ESx2hqOnXMskxe7Yb2gjAlzH1P"
+default._domainkey.fortiguardia.com.	1	IN	TXT	"v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3HAHDnEKwUB9BsutWZW0AjUgXIdy0a4Q/6e4UNRceF0aElqGJmt6zjSo6hwqtTThvX4gAK1J5K4JhE8poV+l1E07QctBBge7dWDftJqVxZDE85ePJnb9gKPj+8lymBE0BTj4GepHrOlm4X6KCSfTj2jV1/6bQ7hROBG/hZgRTItEggonnszTJ5GLuzxA0gWJJ" "vm0OlLVoSU3JRJz/ZuL0o6ZYsIIT18IEXRqFnajV9nLQHminC4KDel7Q8TE9sifMT9J8S8wR44rr4W1exPxp0TT69AXDtMqLwkANh2lB3tqJK+e/y+AlyuMR+cN1Ms6e7fYQ5ZqasC1ylFGg3mWJQIDAQAB;"
+_dmarc.fortiguardia.com.	1	IN	TXT	"v=DMARC1; p=none; rua=mailto:contacto@devus.mx"
+fortiguardia.com.	1	IN	TXT	"v=spf1 a mx ip4:193.46.199.28 ~all"

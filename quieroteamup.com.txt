@@ -1,0 +1,62 @@
+;;
+;; Domain:     quieroteamup.com.
+;; Exported:   2026-05-15 18:17:36
+;;
+;; This file is intended for use for informational and archival
+;; purposes ONLY and MUST be edited before use on a production
+;; DNS server.  In particular, you must:
+;;   -- update the SOA record with the correct authoritative name server
+;;   -- update the SOA record with the contact e-mail address information
+;;   -- update the NS record(s) with the authoritative name servers for this domain.
+;;
+;; For further information, please consult the BIND documentation
+;; located on the following website:
+;;
+;; http://www.isc.org/
+;;
+;; And RFC 1035:
+;;
+;; http://www.ietf.org/rfc/rfc1035.txt
+;;
+;; Please note that we do NOT offer technical support for any use
+;; of this zone data, the BIND name server, or any other third-party
+;; DNS software.
+;;
+;; Use at your own risk.
+;; SOA Record
+quieroteamup.com	3600	IN	SOA	alan.ns.cloudflare.com. dns.cloudflare.com. 2053053565 10000 2400 604800 3600
+
+;; NS Records
+quieroteamup.com.	86400	IN	NS	alan.ns.cloudflare.com.
+quieroteamup.com.	86400	IN	NS	margot.ns.cloudflare.com.
+
+;; A Records
+cpcontacts.quieroteamup.com.	1	IN	A	193.46.199.28 ; cf_tags=cf-proxied:true
+localhost.quieroteamup.com.	1	IN	A	127.0.0.1 ; cf_tags=cf-proxied:false
+mail.quieroteamup.com.	1	IN	A	193.46.199.28 ; cf_tags=cf-proxied:true
+quieroteamup.com.	1	IN	A	193.46.199.28 ; cf_tags=cf-proxied:true
+
+;; CNAME Records
+www.quieroteamup.com.	1	IN	CNAME	quieroteamup.com. ; cf_tags=cf-proxied:true
+
+;; MX Records
+quieroteamup.com.	1	IN	MX	0 mail.quieroteamup.com.
+
+;; SRV Records
+_autodiscover._tcp.quieroteamup.com.	1	IN	SRV	0 0 443 cpanelemaildiscovery.cpanel.net.
+_caldavs._tcp.quieroteamup.com.	1	IN	SRV	0 0 2080 mco22.prodns.mx.
+_caldav._tcp.quieroteamup.com.	1	IN	SRV	0 0 2079 mco22.prodns.mx.
+_carddavs._tcp.quieroteamup.com.	1	IN	SRV	0 0 2080 mco22.prodns.mx.
+_carddav._tcp.quieroteamup.com.	1	IN	SRV	0 0 2079 mco22.prodns.mx.
+
+;; TXT Records
+202604._domainkey.quieroteamup.com.	1	IN	TXT	"v=DKIM1; k=rsa; t=s; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2FmAvfI9x03DZZsyYF0Yo3a0lKaw7xU7qmeq9EmaNjpCyN4nTjeY2iKdPgreDEzfrqTt14YKD317Hn+z7suVZca2CasEfCBCt/niIo4TMWi+wEjbnczQBga6+LP7FpfWOnfVx/6fKmw6zq9tt+zze5HXIremLo++RFCtiTIm3m4zMvr4rIHWX/covWrP" "wfj8LsZuAtHKm5ZmVCEvFFegLPuOXdEEgp49hW2S1XcLAEB2SA8OMk3RQ0obzlnmDdSUMAALcmkaCQet0fNi+xhQ13DUrSjbZ/r6i99HgYn2eP58e9aRIKObec/ExoAs+geUK2qgRbOPzdNCFi09RIWfvwIDAQAB"
+_acme-challenge.quieroteamup.com.	1	IN	TXT	"Je86yBKsk2KiX_8vEywu2fYLRaQZknDwo7vWYkeO_xQ"
+_caldavs._tcp.quieroteamup.com.	1	IN	TXT	"path=/"
+_caldav._tcp.quieroteamup.com.	1	IN	TXT	"path=/"
+_carddavs._tcp.quieroteamup.com.	1	IN	TXT	"path=/"
+_carddav._tcp.quieroteamup.com.	1	IN	TXT	"path=/"
+_cpanel-dcv-test-record.quieroteamup.com.	1	IN	TXT	"_cpanel-dcv-test-record=7ILntle3MG826huwCIcXcPG3ekExeHBGPTMiBaLaxa6N0R1KnCpu4OVTDU4bsXwU"
+default._domainkey.quieroteamup.com.	1	IN	TXT	"v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv/OGuijbd7MRfBMn9lSqI/1qYYxiIA2yotw43jJCWvW8U4tbROWSS0oXLPOjEcwGUtk/nDtUC7GygTeBFDTOHmeV1KhtRWKlNnLf9luIi8z6l9WNa0PpiGLXBtQZDNcbXUDdyZFdd48CDxpY3HvPk3buhw1B5Op8yeHv1pxN8+Ni+5fUZALNFaXhXQ5nBhvkl" "bOToyGfy9GM8/N6X6UJzwKTfPWJck9NszvcD2av73Puor3xj2BIWgeBzTp8vWpIipvphDXKfmLjlPnIh3WleDVFW/95uG+33Ts9h9uuAijAfx4aTyvYVnHrGbboX/O20xxj8evZZAVAgOGgDKdb8wIDAQAB;"
+_dmarc.quieroteamup.com.	1	IN	TXT	"v=DMARC1; p=none; rua=mailto:contacto@devus.mx"
+quieroteamup.com.	1	IN	TXT	"v=spf1 a mx ip4:193.46.199.28 ~all"
