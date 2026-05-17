@@ -6,7 +6,7 @@ Fecha de documentacion: 2026-05-16
 
 Antes de hacer cambios relacionados con este VPS, dominios, DNS, correo, Virtualmin, WordPress, Node.js u otras apps alojadas aqui, leer este documento.
 
-Despues de cualquier cambio relevante, actualizar este mismo documento con:
+Despues de cualquier cambio importante o funcional, actualizar este mismo documento con:
 
 ```text
 Fecha
@@ -18,6 +18,8 @@ Pendientes o riesgos
 ```
 
 Este archivo debe tratarse como la bitacora principal de operacion del VPS.
+
+No es necesario registrar absolutamente todo. Evitar entradas por verificaciones rutinarias, lecturas de archivos, consultas sin cambios, pruebas exploratorias menores o acciones que no alteren la operacion. La bitacora debe mantenerse enfocada en cambios con impacto funcional, configuracion importante, migraciones, incidentes, decisiones operativas y pendientes reales.
 
 ## Resumen ejecutivo
 
@@ -777,4 +779,302 @@ Rama principal renombrada a main.
 Remote configurado como git@github.com:Charly-Rojas/vps.git.
 Push exitoso a origin/main.
 Backups .tar.gz verificados como ignorados por .gitignore.
+```
+
+### 2026-05-16 - Verificacion de acceso SSH al VPS
+
+Cambio realizado:
+
+```text
+Se verifico acceso SSH IPv4 al VPS usando la llave ~/.ssh/devus_vps.
+Se ajustaron permisos locales de la llave privada de 0644 a 0600 porque OpenSSH la rechazaba por permisos demasiado abiertos.
+```
+
+Servicio afectado:
+
+```text
+Acceso SSH administrativo al VPS 193.46.199.28.
+```
+
+Comandos/configuracion importante:
+
+```bash
+chmod 600 ~/.ssh/devus_vps
+ssh -4 -i ~/.ssh/devus_vps root@193.46.199.28 'hostname -f; whoami; date -Is; uptime -p'
+```
+
+Validacion realizada:
+
+```text
+host=server.devus.mx
+user=root
+date=2026-05-16T21:06:27+00:00
+uptime=up 3 days, 1 hour, 41 minutes
+```
+
+Pendientes o riesgos:
+
+```text
+Sin pendientes para acceso SSH. No se hicieron cambios en el servidor durante esta verificacion.
+```
+
+### 2026-05-16 - Usuarios administrativos charly y xime
+
+Cambio realizado:
+
+```text
+Se crearon los usuarios locales charly y xime en el VPS y se habilito sudo sin contraseña para ambos.
+```
+
+Servicio afectado:
+
+```text
+Acceso administrativo del sistema operativo en server.devus.mx.
+```
+
+Comandos/configuracion importante:
+
+```bash
+useradd -m -s /bin/bash charly
+useradd -m -s /bin/bash xime
+usermod -aG wheel charly
+usermod -aG wheel xime
+cat > /etc/sudoers.d/devus-admins
+chmod 0440 /etc/sudoers.d/devus-admins
+visudo -cf /etc/sudoers.d/devus-admins
+```
+
+Contenido de `/etc/sudoers.d/devus-admins`:
+
+```text
+charly ALL=(ALL) NOPASSWD: ALL
+xime ALL=(ALL) NOPASSWD: ALL
+```
+
+Validacion realizada:
+
+```text
+/etc/sudoers.d/devus-admins: parsed OK
+charly pertenece a wheel y sudo -n funciona correctamente.
+xime pertenece a wheel y sudo -n funciona correctamente.
+```
+
+Pendientes o riesgos:
+
+```text
+No se configuraron contraseñas ni llaves SSH especificas para estos usuarios en esta accion.
+```
+
+### 2026-05-16 - Llaves SSH para charly y xime
+
+Cambio realizado:
+
+```text
+Se generaron pares de llaves SSH ed25519 para los usuarios charly y xime.
+Se copiaron las llaves al directorio del proyecto y a ~/.ssh.
+Se instalaron las llaves publicas en authorized_keys de cada usuario en el VPS.
+Se amplio .gitignore para evitar que llaves con nombres devus_vps_* o id_* se agreguen a Git.
+```
+
+Servicio afectado:
+
+```text
+Acceso SSH de usuarios administrativos charly y xime en server.devus.mx.
+```
+
+Comandos/configuracion importante:
+
+```bash
+ssh-keygen -t ed25519 -a 100 -N '' -C 'charly@server.devus.mx' -f devus_vps_charly
+ssh-keygen -t ed25519 -a 100 -N '' -C 'xime@server.devus.mx' -f devus_vps_xime
+cp devus_vps_charly* ~/.ssh/
+cp devus_vps_xime* ~/.ssh/
+chmod 600 devus_vps_charly devus_vps_xime ~/.ssh/devus_vps_charly ~/.ssh/devus_vps_xime
+chmod 644 devus_vps_charly.pub devus_vps_xime.pub ~/.ssh/devus_vps_charly.pub ~/.ssh/devus_vps_xime.pub
+```
+
+Archivos locales:
+
+```text
+devus_vps_charly
+devus_vps_charly.pub
+devus_vps_xime
+devus_vps_xime.pub
+~/.ssh/devus_vps_charly
+~/.ssh/devus_vps_charly.pub
+~/.ssh/devus_vps_xime
+~/.ssh/devus_vps_xime.pub
+```
+
+Validacion realizada:
+
+```text
+Login SSH directo con devus_vps_charly: user=charly host=server.devus.mx sudo=ok
+Login SSH directo con devus_vps_xime: user=xime host=server.devus.mx sudo=ok
+git status muestra las llaves locales como ignoradas.
+```
+
+Pendientes o riesgos:
+
+```text
+Las llaves privadas fueron creadas sin passphrase por solicitud operativa implicita. Deben mantenerse fuera de Git y compartirse solo por un canal seguro si otra persona las necesita.
+```
+
+### 2026-05-16 - Certificados Let's Encrypt en origen para dominios Cloudflare
+
+Cambio realizado:
+
+```text
+Se reemplazaron certificados self-signed del origen por certificados Let's Encrypt en Virtualmin para los dominios que estaban detras de Cloudflare.
+Se solicitaron certificados solo para dominio raiz, www y mail, evitando admin/webmail para no repetir fallos previos por hostnames no resueltos o no validados.
+Virtualmin copio los certificados a la configuracion web y los aplico tambien a Webmin/Usermin, Dovecot y Postfix para cada dominio.
+```
+
+Dominios afectados:
+
+```text
+creativobusiness.com
+dyr.com.mx
+fortiguardia.com
+frozenandfire.com
+sjpabogados.com
+quieroteamup.com
+```
+
+Comandos/configuracion importante:
+
+```bash
+virtualmin generate-acme-cert \
+  --domain dominio.com \
+  --host dominio.com \
+  --host www.dominio.com \
+  --host mail.dominio.com \
+  --web \
+  --renew \
+  --email-error \
+  --allow-subset \
+  --skip-dns-check
+```
+
+Validacion realizada:
+
+```text
+Se valido contra la IP del origen 193.46.199.28 usando SNI que cada dominio sirve certificado emitido por Let's Encrypt.
+Se valido SMTP STARTTLS en mail.dominio:587 para cada dominio afectado y todos presentan certificados Let's Encrypt.
+Virtualmin muestra SSL provider renewal habilitado para los dominios.
+```
+
+Vencimientos:
+
+```text
+creativobusiness.com: 2026-08-14
+dyr.com.mx: 2026-08-14
+fortiguardia.com: 2026-08-14
+frozenandfire.com: 2026-08-14
+sjpabogados.com: 2026-08-14
+quieroteamup.com: 2026-08-14
+```
+
+Pendientes o riesgos:
+
+```text
+No se incluyeron admin.dominio ni webmail.dominio en estos certificados. Si se desea usarlos publicamente con HTTPS valido, primero confirmar DNS y alcance real de esos hostnames.
+La renovacion automatica queda gestionada por Virtualmin; no se configuro un timer separado de certbot para evitar renovar sin copiar certificados a servicios.
+```
+
+### 2026-05-17 - Publicacion Lex Garantia en VPS
+
+Cambio realizado:
+
+```text
+Se creo y publico la app Next.js de Lex Garantia en el VPS con dos entornos separados:
+produccion en lexgarantia.com desde rama main y dev en dev-env.lexgarantia.com desde rama dev.
+Se configuraron Virtualmin, Apache reverse proxy, SSL, systemd, variables de entorno separadas y buzon contacto@lexgarantia.com.
+```
+
+Dominio o servicio afectado:
+
+```text
+lexgarantia.com
+dev-env.lexgarantia.com
+Apache/Virtualmin
+systemd
+Postfix/Dovecot/OpenDKIM
+```
+
+Comandos/configuracion importante:
+
+```bash
+virtualmin create-domain --domain lexgarantia.com --user lexgarantia --web --ssl --mail --unix --dir --logrotate --spam --proxy http://127.0.0.1:3100/
+virtualmin create-domain --domain dev-env.lexgarantia.com --user lexgdev --web --ssl --unix --dir --logrotate --proxy http://127.0.0.1:3101/
+dnf -y install nodejs git
+virtualmin create-user --domain lexgarantia.com --user contacto --passfile <archivo-temporal> --real "Contacto Lex Garantia" --no-creation-mail
+systemctl enable --now lex-garantia-prod.service lex-garantia-dev.service
+```
+
+Rutas y servicios:
+
+```text
+Produccion:
+  usuario: lexgarantia
+  app: /home/lexgarantia/apps/lex_garantia_prod/current
+  env: /home/lexgarantia/apps/lex_garantia_prod/shared/.env
+  servicio: lex-garantia-prod.service
+  puerto: 127.0.0.1:3100
+
+Dev:
+  usuario: lexgdev
+  app: /home/lexgdev/apps/lex_garantia_dev/current
+  env: /home/lexgdev/apps/lex_garantia_dev/shared/.env
+  servicio: lex-garantia-dev.service
+  puerto: 127.0.0.1:3101
+
+Buzon:
+  contacto@lexgarantia.com
+  password guardado solo en /root/migrations/lexgarantia-contact-mailbox-20260517-024520.txt
+```
+
+Validacion realizada:
+
+```text
+GitHub:
+  ramas publicadas: main, dev, feature/project-initialization, feature/bootstrap-docs
+
+Build:
+  npm ci y npm run build exitosos en prod y dev dentro del VPS.
+
+Servicios:
+  lex-garantia-prod.service activo
+  lex-garantia-dev.service activo
+  127.0.0.1:3100 responde 200
+  127.0.0.1:3101 responde 200
+
+Web:
+  https://lexgarantia.com responde 200 por Cloudflare
+  https://www.lexgarantia.com responde 200 por Cloudflare
+  https://dev-env.lexgarantia.com responde 200 por Cloudflare
+  robots.txt de produccion permite indexacion
+  robots.txt de dev contiene Disallow: /
+  sitemap.xml generado en ambos entornos
+
+Correo:
+  contacto@lexgarantia.com creado.
+  App autentica SMTP contra Postfix local con SMTP_HOST=127.0.0.1 y SMTP_TLS_SERVERNAME=server.devus.mx.
+  Prueba local al buzon contacto entregada.
+  Prueba del formulario en produccion exitosa.
+  Confirmacion externa a Gmail aceptada por Gmail.
+  Cola Postfix vacia.
+```
+
+Pendientes o riesgos:
+
+```text
+Cloudflare requiere ajustes manuales para correo:
+  mail debe ser A 193.46.199.28 en DNS only.
+  MX debe apuntar a mail.lexgarantia.com, no al apex proxied.
+  Agregar/ajustar SPF, DKIM y DMARC.
+
+SMTP2GO rechazo lexgarantia.com porque el dominio no esta verificado en su panel.
+Se retiro el mapeo de relay para lexgarantia.com; actualmente la salida usa Postfix directo.
+Para produccion estable, verificar lexgarantia.com en SMTP2GO o configurar otro proveedor SMTP transaccional autenticado.
 ```
