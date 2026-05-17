@@ -1078,3 +1078,62 @@ SMTP2GO rechazo lexgarantia.com porque el dominio no esta verificado en su panel
 Se retiro el mapeo de relay para lexgarantia.com; actualmente la salida usa Postfix directo.
 Para produccion estable, verificar lexgarantia.com en SMTP2GO o configurar otro proveedor SMTP transaccional autenticado.
 ```
+
+### 2026-05-17 - Ajuste visual y consentimiento de contacto en Lex Garantia
+
+Cambio realizado:
+
+```text
+Se publico un ajuste de UI del sitio Lex Garantia en produccion y dev.
+Los botones primarios ahora mantienen texto blanco.
+El boton flotante de WhatsApp quedo como boton circular verde solo con icono blanco.
+El formulario de contacto ahora exige aceptar el aviso de privacidad antes de enviar.
+Se actualizo el texto introductorio del formulario de contacto.
+```
+
+Dominio o servicio afectado:
+
+```text
+lexgarantia.com
+dev-env.lexgarantia.com
+lex-garantia-prod.service
+lex-garantia-dev.service
+```
+
+Comandos/configuracion importante:
+
+```bash
+git fetch origin main
+git checkout -B main origin/main
+npm ci --no-audit --no-fund
+npm run build
+systemctl restart lex-garantia-prod.service
+
+git fetch origin dev
+git checkout -B dev origin/dev
+npm ci --no-audit --no-fund
+npm run build
+systemctl restart lex-garantia-dev.service
+```
+
+Validacion realizada:
+
+```text
+Commit desplegado en prod y dev: bbe1347.
+npm run lint exitoso en local.
+npm run build exitoso en local.
+npm run build exitoso en VPS para prod y dev.
+Servicios systemd activos.
+https://lexgarantia.com responde 200.
+https://www.lexgarantia.com responde 200.
+https://dev-env.lexgarantia.com responde 200.
+Playwright en produccion confirmo texto blanco en botones primarios.
+Playwright en produccion confirmo boton WhatsApp sin texto visible, fondo verde y radio circular.
+Playwright en produccion confirmo texto nuevo y checkbox obligatorio del aviso de privacidad.
+```
+
+Pendientes o riesgos:
+
+```text
+Persisten pendientes previos de correo: ajustar DNS en Cloudflare y verificar lexgarantia.com en SMTP2GO o proveedor transaccional definitivo.
+```
