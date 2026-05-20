@@ -1263,3 +1263,60 @@ Pendientes o riesgos:
 Solo se cubrio 2096 (HTTPS webmail). Otros puertos cPanel (2082 cPanel, 2083 cPanel SSL, 2086/2087 WHM, 2095 webmail HTTP) NO redirigen; si surgen bookmarks que los usen, replicar el patron.
 El cert Listen 2096 https usa los certs LE de cada dominio; renuevan via Virtualmin igual que el resto, no requieren paso extra.
 ```
+
+### 2026-05-20 - Plugin password de Roundcube via chpasswd
+
+Cambio realizado:
+
+```text
+Se activo el plugin password de Roundcube para que cada usuario pueda cambiar su contrasena desde Settings > Password.
+Driver: chpasswd. El plugin invoca "sudo /usr/sbin/chpasswd" pasando "usuario@dominio:nuevopass" por stdin.
+Esto actualiza /etc/shadow, que es lo que Dovecot lee via PAM y lo que Postfix usa via Dovecot SASL.
+Largo minimo configurado: 10. Se exige confirmar contrasena actual.
+```
+
+Dominio o servicio afectado:
+
+```text
+Roundcube (todos los mail.<dominio>)
+sudo / PAM / Dovecot / Postfix
+```
+
+Comandos/configuracion importante:
+
+```text
+/etc/sudoers.d/roundcube-chpasswd:
+  apache ALL=(root) NOPASSWD: /usr/sbin/chpasswd
+
+/etc/roundcubemail/password.inc.php:
+  $config['password_driver']          = 'chpasswd';
+  $config['password_chpasswd_cmd']    = 'sudo /usr/sbin/chpasswd 2> /dev/null';
+  $config['password_confirm_current'] = true;
+  $config['password_minimum_length']  = 10;
+  $config['password_log']             = true;
+  $config['password_algorithm']       = 'clear';
+
+/etc/roundcubemail/config.inc.php:
+  $config['plugins'] = [ 'archive', 'zipdownload', 'managesieve', 'password' ];
+
+Script idempotente: /root/migrations/setup-roundcube-password.sh
+```
+
+Validacion realizada:
+
+```text
+visudo -cf: parsed OK
+sudo -u apache sudo -n /usr/sbin/chpasswd: funciona sin password.
+Login Roundcube de prueba@quieroteamup.com OK.
+Cambio de password via /?_task=settings&_action=plugin.password-save devolvio "Successfully saved.".
+IMAPS 127.0.0.1:993 con el nuevo password autentica: a OK Logged in.
+Password de prueba restaurado al valor original tras la prueba; sin cambios persistentes en buzones de produccion.
+```
+
+Pendientes o riesgos:
+
+```text
+chpasswd cifra el password con el algoritmo por defecto del sistema (sha512 en AlmaLinux 10); password_algorithm queda en 'clear' porque el driver pasa el plano a chpasswd que se encarga del hash.
+Solo permite cambiar contrasenas de buzones que son usuarios Unix (caso Virtualmin estandar). Si en el futuro se agregan buzones puramente virtuales en SQL/LDAP habria que cambiar de driver.
+El privilegio sudoers es minimo: solo el binario /usr/sbin/chpasswd, sin argumentos abusables. Igual revisar si se cambia el usuario apache por uno dedicado a Roundcube.
+```
