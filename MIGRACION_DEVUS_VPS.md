@@ -1137,3 +1137,84 @@ Pendientes o riesgos:
 ```text
 Persisten pendientes previos de correo: ajustar DNS en Cloudflare y verificar lexgarantia.com en SMTP2GO o proveedor transaccional definitivo.
 ```
+
+### 2026-05-20 - Roundcube como webmail por dominio en mail.<dominio>
+
+Cambio realizado:
+
+```text
+Se instalo Roundcube 1.6.15 desde EPEL en el VPS como webmail compartido para los dominios alojados.
+Se creo base de datos MariaDB roundcube con usuario dedicado y se cargo el schema inicial.
+Se configuro /etc/roundcubemail/config.inc.php apuntando a IMAP/SMTP localhost via TLS sobre puertos 143/587.
+Se creo pool dedicado PHP-FPM roundcube en /run/php-fpm/roundcube.sock.
+Se generaron vhosts Apache mail.<dominio> en /etc/httpd/conf.d/00-roundcube-mail-vhosts.conf usando los certs Let's Encrypt existentes de cada dominio (todos cubren mail.<dominio> en SAN).
+Cada vhost http redirige a https; el handler PHP usa el socket Roundcube.
+```
+
+Dominio o servicio afectado:
+
+```text
+mail.creativobusiness.com
+mail.devus.mx
+mail.dyr.com.mx
+mail.fortiguardia.com
+mail.frozenandfire.com
+mail.innovajb.com
+mail.lexgarantia.com
+mail.sjpabogados.com
+mail.quieroteamup.com
+Apache (httpd)
+PHP-FPM
+MariaDB (base nueva roundcube)
+```
+
+Comandos/configuracion importante:
+
+```bash
+dnf -y install roundcubemail
+mysql -uroot -e "CREATE DATABASE roundcube CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -uroot -e "CREATE USER 'roundcube'@'localhost' IDENTIFIED BY '<pass>'; GRANT ALL ON roundcube.* TO 'roundcube'@'localhost';"
+mysql -uroot roundcube < /usr/share/roundcubemail/SQL/mysql.initial.sql
+systemctl restart php-fpm
+systemctl reload httpd
+```
+
+Archivos de referencia en VPS:
+
+```text
+/root/migrations/setup-roundcube.sh
+/root/migrations/roundcube-credentials-20260520.txt   (modo 600, root only)
+/etc/roundcubemail/config.inc.php                     (modo 640, root:apache)
+/etc/php-fpm.d/roundcube.conf
+/etc/httpd/conf.d/00-roundcube-mail-vhosts.conf
+/var/lib/roundcubemail/    /var/log/roundcubemail/
+```
+
+Validacion realizada:
+
+```text
+httpd -t: Syntax OK
+Los 9 vhosts mail.<dominio> responden HTTPS 200 con titulo "DevUs Webmail :: Welcome to DevUs Webmail".
+Login real exitoso para prueba@quieroteamup.com: POST a /?_task=login devolvio 302 hacia ?_task=mail con sesion nueva.
+Cert Let's Encrypt de cada dominio cubre mail.<dominio> en SAN, sin necesidad de emitir certs adicionales.
+PHP-FPM pool roundcube activo en /run/php-fpm/roundcube.sock como apache:apache.
+config.inc.php tiene enable_installer=false y desactiva verify_peer en TLS local a Dovecot/Postfix (cert self-signed interno).
+```
+
+Acceso para usuarios:
+
+```text
+URL por dominio: https://mail.<dominio>
+Usuario: direccion de correo completa
+Pass: la del buzon
+```
+
+Pendientes o riesgos:
+
+```text
+mail.lexgarantia.com responde via VPS solo si se pone DNS only en Cloudflare; hoy el A esta proxied y resuelve a IPs de Cloudflare.
+Ademas el MX de lexgarantia.com apunta a Cloudflare Email Routing (_dc-mx.a70f41ee9d25.lexgarantia.com), asi que el correo entrante no llega a Dovecot del VPS; los buzones IMAP del VPS no recibiran nada externo hasta que el MX cambie a mail.lexgarantia.com.
+Existen ServerAlias mail.<dominio> en los vhosts principales de Virtualmin; los vhosts dedicados de Roundcube ganan match por ServerName exacto y se cargan desde /etc/httpd/conf.d/00-... (despues de httpd.conf). Si Virtualmin regenera y reordena vhosts, revisar que sigan ganando.
+Roundcube se actualizara con dnf update; backup recomendado de /etc/roundcubemail/ y dump de la base roundcube antes de cada actualizacion mayor.
+No se instalo plugin password ni se configuro cambio de contrasena desde Roundcube; los usuarios deben pedir cambio por admin.
+```
