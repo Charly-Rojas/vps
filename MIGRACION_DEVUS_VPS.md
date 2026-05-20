@@ -1218,3 +1218,48 @@ Existen ServerAlias mail.<dominio> en los vhosts principales de Virtualmin; los 
 Roundcube se actualizara con dnf update; backup recomendado de /etc/roundcubemail/ y dump de la base roundcube antes de cada actualizacion mayor.
 No se instalo plugin password ni se configuro cambio de contrasena desde Roundcube; los usuarios deben pedir cambio por admin.
 ```
+
+### 2026-05-20 - Redirect puerto 2096 (cPanel webmail) hacia mail.<dominio>
+
+Cambio realizado:
+
+```text
+Se hizo que Apache escuche en :2096 con SSL y devuelva 301 hacia https://mail.<dominio>/ para los 9 dominios.
+Esto cubre bookmarks antiguos tipo https://dominio.com:2096 que en cPanel apuntaban al webmail.
+Se abrio 2096/tcp en firewalld. Cloudflare ya proxia ese puerto, asi que el 523 "origin unreachable" desaparece al haber un origen escuchando.
+```
+
+Dominio o servicio afectado:
+
+```text
+Apache (httpd) en puerto 2096
+firewalld
+mail.<dominio> de los 9 dominios cubiertos por Roundcube
+```
+
+Comandos/configuracion importante:
+
+```bash
+# Generado por /root/migrations/setup-2096-redirect.sh
+# /etc/httpd/conf.d/01-cpanel-2096-redirect.conf:
+#   Listen 2096 https
+#   <VirtualHost *:2096> por dominio con su cert LE y RedirectMatch 301
+firewall-cmd --permanent --add-port=2096/tcp
+firewall-cmd --reload
+systemctl reload httpd
+```
+
+Validacion realizada:
+
+```text
+httpd -t: Syntax OK
+Curl directo al origen en :2096 devuelve 301 hacia https://mail.<dominio>/ en los 9 dominios.
+Curl via Cloudflare a https://<dominio>:2096/ devuelve 301 hacia https://mail.<dominio>/ en los 9 dominios; el error 523 quedo resuelto.
+```
+
+Pendientes o riesgos:
+
+```text
+Solo se cubrio 2096 (HTTPS webmail). Otros puertos cPanel (2082 cPanel, 2083 cPanel SSL, 2086/2087 WHM, 2095 webmail HTTP) NO redirigen; si surgen bookmarks que los usen, replicar el patron.
+El cert Listen 2096 https usa los certs LE de cada dominio; renuevan via Virtualmin igual que el resto, no requieren paso extra.
+```
