@@ -1320,3 +1320,115 @@ chpasswd cifra el password con el algoritmo por defecto del sistema (sha512 en A
 Solo permite cambiar contrasenas de buzones que son usuarios Unix (caso Virtualmin estandar). Si en el futuro se agregan buzones puramente virtuales en SQL/LDAP habria que cambiar de driver.
 El privilegio sudoers es minimo: solo el binario /usr/sbin/chpasswd, sin argumentos abusables. Igual revisar si se cambia el usuario apache por uno dedicado a Roundcube.
 ```
+
+### 2026-06-20 - Publicacion World Trade Intel en VPS DevUs
+
+Cambio realizado:
+
+```text
+Se configuro un despliegue aislado para la app World Trade Intel Next en el VPS DevUs.
+El despliegue sigue el patron operativo de Lex Garantia, pero con usuario, rutas, puerto, servicio y variables propias.
+Se agrego workflow de GitHub Actions en el repo de la app para desplegar la rama main cuando existan los secretos del repositorio.
+Se hizo un primer despliegue manual usando la misma mecanica de release, build, symlink current y reinicio de systemd.
+```
+
+Dominio o servicio afectado:
+
+```text
+intel.devus.mx
+Apache/Virtualmin
+systemd
+usuario intel
+GitHub Actions del repo WorldTradeIntel-Next
+```
+
+Comandos/configuracion importante:
+
+```bash
+virtualmin create-domain --domain intel.devus.mx --user intel --web --ssl --unix --dir --logrotate --proxy http://127.0.0.1:3102/ --shell /bin/bash
+systemctl enable world-trade-intel.service
+```
+
+Rutas y servicios:
+
+```text
+usuario: intel
+app root: /home/intel/apps/world_trade_intel_prod
+releases: /home/intel/apps/world_trade_intel_prod/releases
+current: /home/intel/apps/world_trade_intel_prod/current
+env: /home/intel/apps/world_trade_intel_prod/shared/.env
+servicio: world-trade-intel.service
+puerto: 127.0.0.1:3102
+workflow: .github/workflows/deploy-devus-vps.yml
+```
+
+Acceso de deploy:
+
+```text
+Se genero una llave SSH dedicada para GitHub Actions y se instalo solo la llave publica en /home/intel/.ssh/authorized_keys.
+Fingerprint publico: SHA256:J1PON4cIHcvT4hZv6OzgHQakjkXZa6WNXoarEuKtFss
+El usuario intel tiene sudo NOPASSWD limitado a systemctl restart/is-active/status de world-trade-intel.service.
+No se documento ni se versiono la llave privada.
+```
+
+Validacion realizada:
+
+```text
+npm ci exitoso en VPS.
+npm run build exitoso en VPS.
+Se reconstruyo el release cargando /home/intel/apps/world_trade_intel_prod/shared/.env antes de next build.
+world-trade-intel.service activo.
+127.0.0.1:3102 responde 200.
+Apache configtest: Syntax OK.
+curl --resolve intel.devus.mx:80:193.46.199.28 http://intel.devus.mx responde 200.
+curl -k --resolve intel.devus.mx:443:193.46.199.28 https://intel.devus.mx responde 200 contra el origen.
+httpd, lex-garantia-prod.service, lex-garantia-dev.service, postfix, dovecot y mariadb siguieron activos despues del cambio.
+Validacion local del repo Intel: npm run lint, npm run typecheck y npm run build exitosos.
+```
+
+Pendientes o riesgos:
+
+```text
+Durante esta primera entrada, intel.devus.mx aun no resolvia publicamente porque faltaba crear el registro DNS en Cloudflare.
+Registro esperado en ese momento: A intel -> 193.46.199.28.
+El certificado de origen quedo self-signed hasta completar DNS y generar Let's Encrypt u origen Cloudflare si se requiere.
+El workflow de GitHub Actions requiere configurar estos secretos del repo antes de que main despliegue automaticamente: DEVUS_VPS_HOST, DEVUS_VPS_PORT, DEVUS_VPS_USER y DEVUS_VPS_SSH_KEY.
+Si se usa Supabase Auth en este subdominio, agregar https://intel.devus.mx a las URLs permitidas del proyecto Supabase.
+```
+
+### 2026-06-20 - DNS publico Cloudflare para intel.devus.mx
+
+Cambio realizado:
+
+```text
+Se confirmo que Cloudflare publica intel.devus.mx como registro A proxied.
+El subdominio ya responde publicamente por HTTP y HTTPS a traves de Cloudflare.
+```
+
+Dominio o servicio afectado:
+
+```text
+intel.devus.mx
+Cloudflare DNS
+Apache/Virtualmin
+world-trade-intel.service
+```
+
+Validacion realizada:
+
+```text
+Nameservers autoritativos de Cloudflare devuelven A proxied para intel.devus.mx.
+curl forzado contra las IPs edge de Cloudflare devuelve HTTP 200 para http://intel.devus.mx.
+curl forzado contra las IPs edge de Cloudflare devuelve HTTP/2 200 para https://intel.devus.mx.
+El HTML publico contiene la app World Trade Intel.
+world-trade-intel.service sigue activo y 127.0.0.1:3102 responde 200 en el origen.
+```
+
+Pendientes o riesgos:
+
+```text
+El certificado del origen para intel.devus.mx sigue siendo self-signed de Virtualmin.
+La respuesta publica HTTPS por Cloudflare funciona con la configuracion actual.
+Si se cambia Cloudflare a un modo que exija certificado de origen confiable, generar Let's Encrypt u Origin Certificate para intel.devus.mx.
+Siguen pendientes los secretos del repo GitHub para activar el deploy automatico desde main.
+```
